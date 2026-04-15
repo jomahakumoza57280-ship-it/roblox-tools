@@ -1,40 +1,34 @@
-import random
-import json
+import time
+import functools
 
-class RobloxGame:
-    def __init__(self, name, max_players):
-        self.name = name
-        self.max_players = max_players
-        self.players = []
 
-    def add_player(self, player_name):
-        if len(self.players) < self.max_players:
-            self.players.append(player_name)
-        else:
-            raise ValueError("Player limit reached.")
+def performance_timer(func):
+    """Decorator to measure execution time of a function."""
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        start_time = time.time()
+        result = func(*args, **kwargs)
+        end_time = time.time()
+        execution_time = end_time - start_time
+        print(f"{func.__name__} executed in {{execution_time}} seconds")
+        return result
+    return wrapper
 
-    def remove_player(self, player_name):
-        try:
-            self.players.remove(player_name)
-        except ValueError:
-            print(f"Player '{player_name}' not found.")
+@performance_timer
+def heavy_computation(data):
+    """Simulate a heavy computation task."""
+    total = 0
+    for num in range(data):
+        total += num ** 2
+    return total
 
-    def get_player_count(self):
-        return len(self.players)
-
-    def to_json(self):
-        return json.dumps({
-            'name': self.name,
-            'max_players': self.max_players,
-            'players': self.players
-        })
-
-    def __str__(self):
-        return f"RobloxGame(name={self.name}, players={self.get_player_count()})"
+@performance_timer
+def process_data(data):
+    """Process the input data with optimizations."""
+    processed = [heavy_computation(item) for item in data]
+    return processed
 
 if __name__ == '__main__':
-    game = RobloxGame("Super fun game", 10)
-    game.add_player("Player1")
-    game.add_player("Player2")
-    print(game)
-    print(game.to_json())
+    sample_data = range(10000)
+    results = process_data(sample_data)
+    print(results)
