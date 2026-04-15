@@ -1,39 +1,31 @@
 import re
 
-class RobloxValidator:
-    @staticmethod
-    def is_valid_username(username: str) -> bool:
-        """
-        Validate the username according to Roblox rules:
-        - Must be 3-20 characters long
-        - May only contain alphanumeric characters and underscores
-        - Must not start or end with an underscore
-        """
-        if not (3 <= len(username) <= 20):
-            return False
-        if username.startswith('_') or username.endswith('_'):
-            return False
-        if not re.match(r'^[a-zA-Z0-9_]+$', username):
-            return False
-        return True
+class ValidationError(Exception):
+    pass
 
-    @staticmethod
-    def is_valid_email(email: str) -> bool:
-        """
-        Validate the email format using regular expressions.
-        """
-        email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-        return re.match(email_regex, email) is not None
+def validate_username(username):
+    if not isinstance(username, str):
+        raise ValidationError('Username must be a string.')
+    if len(username) < 3:
+        raise ValidationError('Username must be at least 3 characters long.')
+    if len(username) > 20:
+        raise ValidationError('Username must not exceed 20 characters.')
+    if not re.match('^[a-zA-Z0-9_]+$', username):
+        raise ValidationError('Username can only contain letters, numbers, and underscores.')
+    return True
 
-    @staticmethod
-    def is_valid_display_name(name: str) -> bool:
-        """
-        Validate the display name for Roblox:
-        - Must be 1-21 characters long
-        - Cannot contain special characters besides spaces and underscores
-        """
-        if not (1 <= len(name) <= 21):
-            return False
-        if not re.match(r'^[a-zA-Z0-9_ ]+$', name):
-            return False
-        return True
+def validate_email(email):
+    if not isinstance(email, str):
+        raise ValidationError('Email must be a string.')
+    if not re.match('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
+        raise ValidationError('Invalid email format.')
+    return True
+
+def validate_password(password):
+    if not isinstance(password, str):
+        raise ValidationError('Password must be a string.')
+    if len(password) < 6:
+        raise ValidationError('Password must be at least 6 characters long.')
+    if not re.search('[A-Za-z]', password) or not re.search('[0-9]', password):
+        raise ValidationError('Password must contain both letters and numbers.')
+    return True
