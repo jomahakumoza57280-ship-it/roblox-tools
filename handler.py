@@ -1,37 +1,36 @@
-import json
+import time
+import requests
+from requests.exceptions import RequestException
 
-class CustomError(Exception):
-    pass
+class NetworkOperation:
+    MAX_RETRIES = 3
+    WAIT_TIME = 2  # seconds
 
-def handle_request(data):
-    if not isinstance(data, dict):
-        raise CustomError("Invalid data type, expected a dictionary.")
-    if 'action' not in data:
-        raise CustomError("Missing 'action' key in data.")
-    if data['action'] not in ['create', 'update', 'delete']:
-        raise CustomError("Invalid action specified.")
-    
-    try:
-        result = process_action(data)
-    except Exception as e:
-        raise CustomError(f"An error occurred while processing the action: {str(e)}")
-    return result
+    def __init__(self, url):
+        self.url = url
 
+    def fetch_data(self):
+        attempt = 0
+        while attempt < self.MAX_RETRIES:
+            try:
+                response = requests.get(self.url)
+                response.raise_for_status()  # Raise an error for bad responses
+                return response.json()
+            except RequestException as e:
+                attempt += 1
+                print(f"Attempt {attempt} failed: {e}")
+                if attempt < self.MAX_RETRIES:
+                    print(f"Retrying in {self.WAIT_TIME} seconds...")
+                    time.sleep(self.WAIT_TIME)
+                else:
+                    print("All attempts failed.")
+                    raise
 
-def process_action(data):
-    action = data['action']
-    # Simulate processing logic
-    if action == 'create':
-        return json.dumps({'status': 'success', 'message': 'Created successfully.'})
-    elif action == 'update':
-        return json.dumps({'status': 'success', 'message': 'Updated successfully.'})
-    elif action == 'delete':
-        return json.dumps({'status': 'success', 'message': 'Deleted successfully.'})
-
+# Example usage
 if __name__ == '__main__':
-    test_data = {'action': 'create'}
+    operation = NetworkOperation('https://api.example.com/data')
     try:
-        response = handle_request(test_data)
-        print(response)
-    except CustomError as e:
-        print(f'Error: {str(e)}')
+        data = operation.fetch_data()
+        print(data)
+    except Exception as e:
+        print(f"Failed to fetch data: {e}")
