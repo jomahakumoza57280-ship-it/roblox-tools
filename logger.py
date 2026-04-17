@@ -1,27 +1,40 @@
 import logging
-import os
-from logging.handlers import RotatingFileHandler
 
-def setup_logger(log_file='app.log', max_size=5 * 1024 * 1024, backup_count=3):
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.DEBUG)  
+# Set up basic logging configuration
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
-    # Create a directory for logs if it doesn't exist
-    if not os.path.exists('logs'):
-        os.makedirs('logs')
+class Logger:
+    def __init__(self, name):
+        self.logger = logging.getLogger(name)
 
-    # Create a rotating file handler
-    handler = RotatingFileHandler(os.path.join('logs', log_file), maxBytes=max_size, backupCount=backup_count)
-    handler.setLevel(logging.DEBUG)
+    def debug(self, message):
+        self.logger.debug(message)
 
-    # Create a formatter and set it for the handler
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    handler.setFormatter(formatter)
+    def info(self, message):
+        self.logger.info(message)
 
-    # Add the handler to the logger
-    logger.addHandler(handler)
+    def warning(self, message):
+        self.logger.warning(message)
 
-    return logger
+    def error(self, message):
+        self.logger.error(message)
 
-logger = setup_logger()  # Instantiate the logger
-logger.info('Logger is set up and ready!')
+    def critical(self, message):
+        self.logger.critical(message)
+
+    def set_level(self, level):
+        self.logger.setLevel(level)
+
+    def log_performance(self, func):
+        import time
+        
+        def wrapper(*args, **kwargs):
+            start_time = time.time()
+            result = func(*args, **kwargs)
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+            self.info(f'Performance: {func.__name__} took {elapsed_time:.4f}s')
+            return result
+        
+        return wrapper
