@@ -1,43 +1,37 @@
 import time
 
-class RobloxPerformance:
+class PerformanceOptimizer:
     def __init__(self):
-        self.logs = []
+        self.execution_times = []
 
-    def log_execution_time(self, func):
-        """
-        Decorator to log execution time of functions.
-        """
+    def time_function(self, func):
+        """Decorator to time a function's execution."""
         def wrapper(*args, **kwargs):
             start_time = time.time()
             result = func(*args, **kwargs)
             end_time = time.time()
-            execution_time = end_time - start_time
-            self.logs.append({
-                'function': func.__name__,
-                'execution_time': execution_time
-            })
+            self.execution_times.append(end_time - start_time)
             return result
         return wrapper
 
-    def get_logs(self):
-        """
-        Returns the collected execution time logs.
-        """
-        return self.logs
+    def average_time(self):
+        """Returns the average execution time of tracked functions."""
+        return sum(self.execution_times) / len(self.execution_times) if self.execution_times else 0
 
-    @log_execution_time
-    def expensive_operation(self, iterations):
-        """
-        Simulates a time-consuming operation.
-        """
-        total = 0
-        for i in range(iterations):
-            total += i * 2
-        return total
+    def clear_times(self):
+        """Clears the recorded execution times."""
+        self.execution_times.clear()
 
-# Example usage
+# Example of usage
 if __name__ == '__main__':
-    performance = RobloxPerformance()
-    performance.expensive_operation(10000)
-    print(performance.get_logs())
+    optimizer = PerformanceOptimizer()
+
+    @optimizer.time_function
+    def example_function(delay):
+        time.sleep(delay)
+
+    # Test the performance measurement
+    for i in range(5):
+        example_function(i * 0.1)
+
+    print(f'Average execution time: {optimizer.average_time()} seconds')
