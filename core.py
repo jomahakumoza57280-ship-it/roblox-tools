@@ -1,37 +1,27 @@
-import time
+from typing import List, Dict, Any
 
-class PerformanceOptimizer:
-    def __init__(self):
-        self.execution_times = []
+class RobloxPlayer:
+    def __init__(self, username: str, age: int, is_online: bool) -> None:
+        """Initialize a RobloxPlayer instance."""
+        self.username: str = username
+        self.age: int = age
+        self.is_online: bool = is_online
 
-    def time_function(self, func):
-        """Decorator to time a function's execution."""
-        def wrapper(*args, **kwargs):
-            start_time = time.time()
-            result = func(*args, **kwargs)
-            end_time = time.time()
-            self.execution_times.append(end_time - start_time)
-            return result
-        return wrapper
+    def get_player_info(self) -> Dict[str, Any]:
+        """Return the player's info as a dictionary."""
+        return {
+            'username': self.username,
+            'age': self.age,
+            'is_online': self.is_online
+        }
 
-    def average_time(self):
-        """Returns the average execution time of tracked functions."""
-        return sum(self.execution_times) / len(self.execution_times) if self.execution_times else 0
+def filter_online_players(players: List[RobloxPlayer]) -> List[RobloxPlayer]:
+    """Filter out online players from the list."""
+    return [player for player in players if player.is_online]
 
-    def clear_times(self):
-        """Clears the recorded execution times."""
-        self.execution_times.clear()
-
-# Example of usage
-if __name__ == '__main__':
-    optimizer = PerformanceOptimizer()
-
-    @optimizer.time_function
-    def example_function(delay):
-        time.sleep(delay)
-
-    # Test the performance measurement
-    for i in range(5):
-        example_function(i * 0.1)
-
-    print(f'Average execution time: {optimizer.average_time()} seconds')
+def find_player_by_username(players: List[RobloxPlayer], username: str) -> RobloxPlayer:
+    """Find a player by their username."""
+    for player in players:
+        if player.username == username:
+            return player
+    raise ValueError(f'Player with username {username} not found.')
