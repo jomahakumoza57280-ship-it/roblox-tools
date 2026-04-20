@@ -1,50 +1,34 @@
-import json
-import logging
+from typing import List, Dict, Any
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
-class RobloxDataProcessor:
-    def __init__(self, data):
-        self.data = data
+def process_data(data: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """
+    Processes a list of data dictionaries.
+    
+    Args:
+        data (List[Dict[str, Any]]): A list of dictionaries,
+        where each dictionary contains data to be processed.
+    
+    Returns:
+        List[Dict[str, Any]]: A list of processed data dictionaries.
+    """
+    processed_data = []
+    for item in data:
+        processed_item = {
+            'id': item['id'],
+            'name': item['name'].strip(),
+            'value': item['value'] if item['value'] > 0 else 0
+        }
+        processed_data.append(processed_item)
+    return processed_data
 
-    def validate_data(self):
-        if not isinstance(self.data, list):
-            logger.error('Data is not a list')
-            raise ValueError('Expected a list, got {}'.format(type(self.data).__name__))
-        if len(self.data) == 0:
-            logger.error('Data list is empty')
-            raise ValueError('Data list cannot be empty')
 
-    def process_data(self):
-        self.validate_data()
-        processed = []
-        for item in self.data:
-            if not isinstance(item, dict):
-                logger.warning('Skipping non-dict item: {}'.format(item))
-                continue
-            processed_data = self.process_item(item)
-            if processed_data:
-                processed.append(processed_data)
-        return processed
-
-    def process_item(self, item):
-        try:
-            # Example processing logic
-            return {'id': item['id'], 'name': item.get('name', 'Unknown')}
-        except KeyError as e:
-            logger.error('Missing key in item: {}'.format(e))
-            return None
-        except Exception as e:
-            logger.error('Error processing item: {}'.format(e))
-            return None
-
-if __name__ == '__main__':
-    sample_data = [{'id': 1, 'name': 'Item1'}, {'id': 2}, 'Invalid item']
-    processor = RobloxDataProcessor(sample_data)
-    try:
-        result = processor.process_data()
-        print(json.dumps(result, indent=2))
-    except ValueError as e:
-        logger.error('Data processing failed: {}'.format(e))
+def display_data(data: List[Dict[str, Any]]) -> None:
+    """
+    Displays the processed data in a readable format.
+    
+    Args:
+        data (List[Dict[str, Any]]): A list of processed data dictionaries.
+    """
+    for item in data:
+        print(f"ID: {item['id']}, Name: {item['name']}, Value: {item['value']}")
