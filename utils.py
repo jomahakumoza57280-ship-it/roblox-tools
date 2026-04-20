@@ -1,26 +1,38 @@
-import time
-import requests
+import json
+import os
 
-class NetworkException(Exception):
-    pass
+# Utility function for loading Roblox data from a JSON file
 
-def retry_network_operation(max_retries=3, delay=2):
-    def decorator(func):
-        def wrapper(*args, **kwargs):
-            retries = 0
-            while retries < max_retries:
-                try:
-                    return func(*args, **kwargs)
-                except (requests.ConnectionError, requests.Timeout) as e:
-                    retries += 1
-                    if retries == max_retries:
-                        raise NetworkException(f'Network operation failed after {max_retries} attempts')
-                    time.sleep(delay)
-        return wrapper
-    return decorator
+def load_roblox_data(file_path):
+    """
+    Loads Roblox data from a given JSON file.
+    Raises FileNotFoundError if the file does not exist.
+    """
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"The file {file_path} does not exist.")
+    with open(file_path, 'r') as file:
+        try:
+            data = json.load(file)
+            return data
+        except json.JSONDecodeError:
+            raise ValueError(f"Invalid JSON in file: {file_path}")
 
-@retry_network_operation(max_retries=5, delay=1)
-def fetch_data(url):
-    response = requests.get(url)
-    response.raise_for_status()
-    return response.json()
+# Utility function for saving Roblox data to a JSON file
+
+def save_roblox_data(file_path, data):
+    """
+    Saves the provided data as JSON to a file.
+    Raises ValueError if data is not serializable.
+    """
+    try:
+        with open(file_path, 'w') as file:
+            json.dump(data, file, indent=4)
+    except TypeError:
+        raise ValueError("Provided data is not serializable to JSON.")
+
+# Example usage:
+if __name__ == '__main__':
+    example_data = {'name': 'Roblox Game', 'players': 100}
+    save_roblox_data('game_data.json', example_data)
+    loaded_data = load_roblox_data('game_data.json')
+    print(loaded_data)
