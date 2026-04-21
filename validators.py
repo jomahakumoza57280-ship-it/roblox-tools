@@ -1,27 +1,30 @@
-def validate_user_input(user_input):
-    if not isinstance(user_input, str):
-        raise ValueError('Input must be a string')
-    if len(user_input) < 1:
-        raise ValueError('Input cannot be empty')
-    if len(user_input) > 100:
-        raise ValueError('Input cannot exceed 100 characters')
-    return True
+import re
 
+class InputValidator:
+    @staticmethod
+    def validate_username(username):
+        if not isinstance(username, str):
+            raise ValueError('Username must be a string.')
+        if not 3 <= len(username) <= 20:
+            raise ValueError('Username must be between 3 and 20 characters long.')
+        if not re.match('^[a-zA-Z0-9_]+$', username):
+            raise ValueError('Username can only contain alphanumeric characters and underscores.')
 
-def main_processing_loop():
-    user_inputs = []
-    while True:
-        user_input = input('Enter user input (or type "exit" to quit): ')
-        if user_input.lower() == 'exit':
-            break
-        try:
-            validate_user_input(user_input)
-            user_inputs.append(user_input)
-            print(f'Valid input received: {user_input}')
-        except ValueError as e:
-            print(f'Error: {e}')
-    print('Exiting loop. Collected inputs:', user_inputs)
+    @staticmethod
+    def validate_password(password):
+        if not isinstance(password, str):
+            raise ValueError('Password must be a string.')
+        if len(password) < 8:
+            raise ValueError('Password must be at least 8 characters long.')
+        if not re.search('[A-Z]', password):
+            raise ValueError('Password must contain at least one uppercase letter.')
+        if not re.search('[0-9]', password):
+            raise ValueError('Password must contain at least one number.')
 
-
-if __name__ == '__main__':
-    main_processing_loop()
+    @staticmethod
+    def validate_email(email):
+        if not isinstance(email, str):
+            raise ValueError('Email must be a string.')
+        email_regex = r'^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$'
+        if not re.match(email_regex, email):
+            raise ValueError('Invalid email format.')
