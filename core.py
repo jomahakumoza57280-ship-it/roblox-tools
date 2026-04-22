@@ -1,27 +1,34 @@
-from typing import List, Dict, Any
+import logging
 
-class RobloxPlayer:
-    def __init__(self, username: str, age: int, is_online: bool) -> None:
-        """Initialize a RobloxPlayer instance."""
-        self.username: str = username
-        self.age: int = age
-        self.is_online: bool = is_online
+# Set up logging configuration
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-    def get_player_info(self) -> Dict[str, Any]:
-        """Return the player's info as a dictionary."""
-        return {
-            'username': self.username,
-            'age': self.age,
-            'is_online': self.is_online
-        }
+class Game:
+    def __init__(self, title):
+        self.title = title
+        self.players = []
 
-def filter_online_players(players: List[RobloxPlayer]) -> List[RobloxPlayer]:
-    """Filter out online players from the list."""
-    return [player for player in players if player.is_online]
+    def add_player(self, player):
+        if player not in self.players:
+            self.players.append(player)
+            logger.info(f'{player} joined {self.title}.')
+        else:
+            logger.warning(f'{player} is already in the game.')
 
-def find_player_by_username(players: List[RobloxPlayer], username: str) -> RobloxPlayer:
-    """Find a player by their username."""
-    for player in players:
-        if player.username == username:
-            return player
-    raise ValueError(f'Player with username {username} not found.')
+    def remove_player(self, player):
+        if player in self.players:
+            self.players.remove(player)
+            logger.info(f'{player} left {self.title}.')
+        else:
+            logger.warning(f'{player} is not in the game.')
+
+    def list_players(self):
+        return self.players
+
+if __name__ == '__main__':
+    game = Game('Roblox Fun')
+    game.add_player('Alice')
+    game.add_player('Bob')
+    game.remove_player('Alice')
+    logger.info(f'Current players: {game.list_players()}')
