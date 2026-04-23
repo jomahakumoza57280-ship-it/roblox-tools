@@ -1,34 +1,26 @@
 import json
+import os
 
-class ConfigError(Exception):
-    pass
+DEFAULT_CONFIG = {
+    'username': 'guest',
+    'avatar': 'default_avatar.png',
+    'volume': 50,
+    'language': 'en',
+}
 
-class Config:
-    def __init__(self, filepath):
-        self.filepath = filepath
-        self.config_data = self.load_config()
+def load_config(file_path='config.json'):
+    """Load configuration from a JSON file, merging with defaults."""
+    if os.path.isfile(file_path):
+        with open(file_path, 'r') as f:
+            try:
+                user_config = json.load(f)
+                # Merge user config with defaults
+                config = {**DEFAULT_CONFIG, **user_config}
+                return config
+            except json.JSONDecodeError:
+                print('Error decoding JSON, using defaults')
+    return DEFAULT_CONFIG
 
-    def load_config(self):
-        try:
-            with open(self.filepath, 'r') as file:
-                return json.load(file)
-        except FileNotFoundError:
-            raise ConfigError(f"Configuration file '{self.filepath}' not found.")
-        except json.JSONDecodeError:
-            raise ConfigError(f"Failed to parse JSON from '{self.filepath}'.")
-        except Exception as e:
-            raise ConfigError(f"An unexpected error occurred: {str(e)}")
-
-    def get_setting(self, key, default=None):
-        if key not in self.config_data:
-            return default
-        return self.config_data[key]
-
-# Example Usage
 if __name__ == '__main__':
-    try:
-        config = Config('config.json')
-        example_setting = config.get_setting('example_key', 'default_value')
-        print(example_setting)
-    except ConfigError as e:
-        print(e)
+    config = load_config()
+    print(config)
