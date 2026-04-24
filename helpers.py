@@ -1,24 +1,35 @@
-import time
-import requests
-from requests.exceptions import RequestException
+import json
+import logging
 
-def retry_request(func, retries=3, delay=1, *args, **kwargs):
-    """Attempt a network request with retry logic."""
-    for attempt in range(retries):
-        try:
-            response = func(*args, **kwargs)
-            response.raise_for_status()  # Raise an error for bad responses
-            return response
-        except RequestException as e:
-            print(f"Attempt {attempt + 1} failed: {e}")
-            if attempt < retries - 1:
-                time.sleep(delay)  # Wait before retrying
-            else:
-                raise
+# Configure logging
+def configure_logging(log_file='app.log'):
+    logging.basicConfig(
+        filename=log_file,
+        level=logging.DEBUG,
+        format='%(asctime)s - %(levelname)s - %(message)s'
+    )
 
-# Example usage:
-# def fetch_data(url):
-#     return requests.get(url)
-#
-# response = retry_request(fetch_data, url='https://api.example.com/data')
-# print(response.json())
+# Load JSON from a file with error handling
+def load_json_file(file_path):
+    try:
+        with open(file_path, 'r') as file:
+            return json.load(file)
+    except FileNotFoundError:
+        logging.error(f'File not found: {file_path}')
+        return None
+    except json.JSONDecodeError:
+        logging.error(f'Error decoding JSON from file: {file_path}')
+        return None
+    except Exception as e:
+        logging.error(f'Unexpected error occurred: {str(e)}')
+        return None
+
+# Save JSON to a file with error handling
+def save_json_to_file(data, file_path):
+    try:
+        with open(file_path, 'w') as file:
+            json.dump(data, file, indent=4)
+    except IOError:
+        logging.error(f'Error writing to file: {file_path}')
+    except Exception as e:
+        logging.error(f'Unexpected error occurred: {str(e)}')
