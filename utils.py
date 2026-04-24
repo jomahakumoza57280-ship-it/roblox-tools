@@ -1,33 +1,37 @@
 import json
-import os
 
-def read_json_file(file_path):
-    """Reads a JSON file and returns the data."""
-    if not os.path.isfile(file_path):
-        raise FileNotFoundError(f"The file {file_path} does not exist.")
-    with open(file_path, 'r') as file:
-        return json.load(file)
-
-
-def write_json_file(file_path, data):
-    """Writes data to a JSON file."""
-    with open(file_path, 'w') as file:
-        json.dump(data, file, indent=4)
-
-
-def get_env_variable(var_name):
-    """Gets an environment variable, returns None if not found."""
-    return os.getenv(var_name)
-
-
-def safe_divide(numerator, denominator):
-    """Performs safe division, returns None if denominator is zero."""
+def load_json(file_path):
+    """Load JSON data from a file."""
     try:
-        return numerator / denominator
-    except ZeroDivisionError:
+        with open(file_path, 'r') as f:
+            return json.load(f)
+    except Exception as e:
+        print(f'Error loading JSON: {e}')
         return None
 
 
-def format_roblock_id(game_id):
-    """Formats the Roblox game ID for API requests."""
-    return f"https://api.roblox.com/games/{game_id}"
+def save_json(data, file_path):
+    """Save data to a JSON file."""
+    try:
+        with open(file_path, 'w') as f:
+            json.dump(data, f, indent=4)
+    except Exception as e:
+        print(f'Error saving JSON: {e}')
+
+
+def generate_unique_id(existing_ids):
+    """Generate a unique ID not in the existing IDs set."""
+    new_id = 1
+    while new_id in existing_ids:
+        new_id += 1
+    return new_id
+
+
+def format_player_name(player_name):
+    """Format a player name to title case."""
+    return player_name.strip().title()
+
+
+def is_valid_username(username):
+    """Check if a username is valid (between 3 and 20 chars)."""
+    return 3 <= len(username) <= 20
