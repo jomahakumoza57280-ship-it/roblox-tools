@@ -1,30 +1,48 @@
-import re
+from typing import Any, Dict, Optional
 
-class InputValidator:
-    @staticmethod
-    def validate_username(username):
-        if not isinstance(username, str):
-            raise ValueError('Username must be a string.')
-        if not 3 <= len(username) <= 20:
-            raise ValueError('Username must be between 3 and 20 characters long.')
-        if not re.match('^[a-zA-Z0-9_]+$', username):
-            raise ValueError('Username can only contain alphanumeric characters and underscores.')
 
-    @staticmethod
-    def validate_password(password):
-        if not isinstance(password, str):
-            raise ValueError('Password must be a string.')
-        if len(password) < 8:
-            raise ValueError('Password must be at least 8 characters long.')
-        if not re.search('[A-Z]', password):
-            raise ValueError('Password must contain at least one uppercase letter.')
-        if not re.search('[0-9]', password):
-            raise ValueError('Password must contain at least one number.')
+def validate_class_id(class_id: int) -> bool:
+    """
+    Validates if the given class ID is a positive integer.
 
-    @staticmethod
-    def validate_email(email):
-        if not isinstance(email, str):
-            raise ValueError('Email must be a string.')
-        email_regex = r'^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$'
-        if not re.match(email_regex, email):
-            raise ValueError('Invalid email format.')
+    Args:
+        class_id (int): The class ID to validate.
+
+    Returns:
+        bool: True if valid, False otherwise.
+    """
+    return class_id > 0
+
+
+def validate_user_data(user_data: Dict[str, Any]) -> Optional[str]:
+    """
+    Validates user data against expected fields.
+
+    Args:
+        user_data (Dict[str, Any]): A dictionary containing user data.
+
+    Returns:
+        Optional[str]: Returns a validation error message if invalid, otherwise None.
+    """
+    required_fields = ['username', 'age', 'email']
+    for field in required_fields:
+        if field not in user_data:
+            return f'Missing required field: {field}'
+    if not isinstance(user_data['age'], int) or user_data['age'] <= 0:
+        return 'Age must be a positive integer.'
+    if not isinstance(user_data['username'], str) or len(user_data['username']) < 3:
+        return 'Username must be at least 3 characters long.'
+    return None
+
+
+def validate_item_id(item_id: int) -> bool:
+    """
+    Validates if the given item ID is a positive integer.
+
+    Args:
+        item_id (int): The item ID to validate.
+
+    Returns:
+        bool: True if valid, False otherwise.
+    """
+    return item_id > 0
