@@ -1,37 +1,19 @@
-import json
+import time
+import requests
 
-def load_json(file_path):
-    """Load JSON data from a file."""
-    try:
-        with open(file_path, 'r') as f:
-            return json.load(f)
-    except Exception as e:
-        print(f'Error loading JSON: {e}')
-        return None
+class NetworkError(Exception):
+    pass
 
-
-def save_json(data, file_path):
-    """Save data to a JSON file."""
-    try:
-        with open(file_path, 'w') as f:
-            json.dump(data, f, indent=4)
-    except Exception as e:
-        print(f'Error saving JSON: {e}')
-
-
-def generate_unique_id(existing_ids):
-    """Generate a unique ID not in the existing IDs set."""
-    new_id = 1
-    while new_id in existing_ids:
-        new_id += 1
-    return new_id
-
-
-def format_player_name(player_name):
-    """Format a player name to title case."""
-    return player_name.strip().title()
-
-
-def is_valid_username(username):
-    """Check if a username is valid (between 3 and 20 chars)."""
-    return 3 <= len(username) <= 20
+def retry_request(url, max_retries=3, delay=1, backoff=2):
+    attempt = 0
+    while attempt < max_retries:
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            attempt += 1
+            if attempt >= max_retries:
+                raise NetworkError(f'Failed after {max_retries} attempts') from e
+            time.sleep(delay)
+            delay *= backoff
