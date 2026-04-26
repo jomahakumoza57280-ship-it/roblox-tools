@@ -1,38 +1,43 @@
 # roblox-tools
 
-roblox-tools is a Python library designed to simplify and enhance the development experience for Roblox game developers. With utilities that streamline common tasks, it empowers creators to focus on building amazing experiences on the platform.
+Roblox-tools is a Python library designed to simplify the development process for Roblox game developers. With an emphasis on automation and ease of integration, this toolkit empowers users to create scripts and manage game assets efficiently.
 
 ## Features
-
-- **Asset Management**: Automatically upload and manage assets including images, audio, and models to Roblox using a simple command line interface.
-- **Game Data Retrieval**: Access and analyze statistics and metrics for your games such as player counts and revenue, enabling data-driven decisions.
-- **Script Automation**: Create, modify, and run scripts remotely, allowing for quick updates and maintenance without the need to log into Roblox Studio.
-- **Enhanced User Interface**: Provides a straightforward graphical user interface (GUI) for those who prefer visual interaction over command-line operations.
+- **Asset Management**: Easily upload, download, and manage Roblox assets directly from your Python scripts.
+- **User Authentication**: Securely log in to Roblox using user credentials and manage sessions seamlessly.
+- **API Interaction**: Interact with the Roblox API to fetch player statistics, game details, and real-time data effortlessly.
+- **Data Analysis Tools**: Analyze game performance metrics with built-in data visualization functions.
 
 ## Installation
 
-To get started with roblox-tools, ensure you have Python 3.6 or later installed. Then, clone the repository and install the required dependencies:
+To get started with roblox-tools, ensure you have Python 3.7 or higher installed. Then, run the following commands in your terminal or command prompt:
 
 ```bash
-git clone https://github.com/YourUsername/roblox-tools.git
-cd roblox-tools
-pip install -r requirements.txt
+pip install roblox-tools
 ```
 
-## Basic Usage Example
+## Basic Usage
 
-After installation, you can use roblox-tools to upload an asset. For example, to upload an image, you can use:
+Here's a quick example demonstrating how to use roblox-tools to log in to Roblox and fetch player statistics:
 
-```bash
-python upload_asset.py --file path/to/your_image.png --asset-type image
+```python
+from roblox_tools import RobloxAPI
+
+# Instantiate the Roblox API client
+api_client = RobloxAPI()
+
+# Login using your Roblox credentials
+api_client.login('your_username', 'your_password')
+
+# Fetch player statistics
+player_data = api_client.get_player_stats('RobloxPlayerID')
+print(f"Player: {player_data['username']}, Wins: {player_data['wins']}, Losses: {player_data['losses']}")
 ```
 
-This command will upload your specified image to Roblox, allowing you to use it in your games instantly.
+For detailed documentation and advanced usage, refer to the [documentation](https://github.com/Developer/roblox-tools/wiki).
 
-For more detailed usage, visit the [documentation](https://github.com/YourUsername/roblox-tools/wiki).
+![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)
 
 ## License
-
-![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
