@@ -1,52 +1,31 @@
 import logging
+import os
+from logging.handlers import RotatingFileHandler
 
+# Configure logger with rotation
 
-def setup_logger(name: str, log_file: str, level: int = logging.INFO) -> logging.Logger:
-    """
-    Setup a logger with the specified name and log file.
-
-    Args:
-        name (str): The name of the logger.
-        log_file (str): The log file path to write logs.
-        level (int): The logging level (default is INFO).
-
-    Returns:
-        logging.Logger: Configured logger instance.
-    """
+def setup_logger(log_file='app.log', max_bytes=5 * 1024 * 1024, backup_count=3):
     # Create a logger
-    logger = logging.getLogger(name)
-    logger.setLevel(level)
+    logger = logging.getLogger('roblox_tools')
+    logger.setLevel(logging.DEBUG)
 
-    # Create file handler that logs to a file
-    fh = logging.FileHandler(log_file)
-    fh.setLevel(level)
+    # Create a file handler for logging
+    if not os.path.exists(os.path.dirname(log_file)):
+        os.makedirs(os.path.dirname(log_file))
 
-    # Create formatter and add it to the handler
+    handler = RotatingFileHandler(log_file, maxBytes=max_bytes, backupCount=backup_count)
+    handler.setLevel(logging.DEBUG)
+
+    # Create a formatter for logging output
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    fh.setFormatter(formatter)
+    handler.setFormatter(formatter)
 
-    # Add the file handler to the logger
-    logger.addHandler(fh)
+    # Add the handler to the logger
+    logger.addHandler(handler)
+
     return logger
 
-
-def log_info(logger: logging.Logger, message: str) -> None:
-    """
-    Log an information message.
-
-    Args:
-        logger (logging.Logger): The logger instance to use.
-        message (str): The information message to log.
-    """
-    logger.info(message)
-
-
-def log_error(logger: logging.Logger, message: str) -> None:
-    """
-    Log an error message.
-
-    Args:
-        logger (logging.Logger): The logger instance to use.
-        message (str): The error message to log.
-    """
-    logger.error(message)
+# Example usage
+if __name__ == '__main__':
+    logger = setup_logger()
+    logger.info('Logger has been set up!')
